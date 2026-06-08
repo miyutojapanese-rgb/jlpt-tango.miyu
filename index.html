@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>JLPT 単語フリップカード（N3・N2・N1）｜@Miyu_to_nihongo</title>
+<style>
+  :root{--orange:#E8742F;--orange-d:#C85A18;--cream:#FFF3E0;--soft:#FDE9D4;--ink:#3A2E26;
+    --green:#3C9A5F;--green-bg:#E7F6EC;--red:#D8543A;--red-bg:#FCEAE6;--line:#06C755;}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{background:var(--cream);color:var(--ink);
+    font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+    line-height:1.6;-webkit-text-size-adjust:100%}
+  .wrap{max-width:520px;margin:0 auto;padding:16px 14px 40px;min-height:100vh}
+  .brand{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--orange-d);
+    font-size:15px;margin-bottom:14px;letter-spacing:.4px}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--orange)}
+  .card{background:#fff;border-radius:18px;padding:20px;box-shadow:0 8px 26px rgba(200,90,24,.10);margin-bottom:14px}
+  h1{font-size:21px;line-height:1.45;margin-bottom:10px}
+  h2{font-size:18px;color:var(--orange-d);margin-bottom:10px}
+  p{font-size:14.5px;margin-bottom:8px}
+  .muted{color:#8a7a6c;font-size:13px}
+  .pill{display:inline-block;background:var(--soft);color:var(--orange-d);border-radius:999px;
+    padding:4px 12px;font-size:12px;font-weight:700;margin:2px 4px 8px 0}
+  .btn{display:block;width:100%;border:0;cursor:pointer;border-radius:14px;background:var(--orange);
+    color:#fff;font-weight:800;font-size:16px;padding:14px;margin-top:8px;font-family:inherit;text-align:center;text-decoration:none;transition:.12s}
+  .btn:hover{background:var(--orange-d)} .btn:active{transform:scale(.99)}
+  .btn.ghost{background:#fff;color:var(--orange-d);border:2px solid var(--orange)}
+  .btn.line{background:var(--line)} .btn.sm{font-size:14px;padding:11px}
+  .seg{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 6px}
+  .seg button{flex:1;min-width:72px;border:2px solid var(--soft);background:#fff;color:var(--ink);
+    border-radius:12px;padding:10px 6px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+  .seg button.on{border-color:var(--orange);background:var(--soft);color:var(--orange-d)}
+  .label{font-size:12.5px;font-weight:800;color:var(--orange-d);margin:12px 0 4px}
+  .hide{display:none} .center{text-align:center}
+  .stat{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;color:var(--orange-d);margin-bottom:8px}
+  .prog{height:8px;background:var(--soft);border-radius:999px;overflow:hidden;margin-bottom:14px}
+  .prog>i{display:block;height:100%;background:var(--orange);width:0;transition:.3s}
+  .scene{perspective:1200px;margin:6px 0 14px}
+  .flip{position:relative;width:100%;height:330px;cursor:pointer;
+    transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+  .flip.flipped{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:22px;text-align:center;box-shadow:0 10px 30px rgba(200,90,24,.16)}
+  .front{background:linear-gradient(160deg,#fff,#FFF7EE);border:2px solid var(--soft)}
+  .back{background:linear-gradient(160deg,#FFF3E0,#FDE9D4);transform:rotateY(180deg);border:2px solid var(--orange)}
+  .word{font-size:46px;font-weight:800;color:var(--ink);line-height:1.2}
+  .word.small{font-size:30px}
+  .reading{font-size:30px;font-weight:800;color:var(--orange-d)}
+  .en{font-size:18px;font-weight:700;color:var(--ink);margin-top:2px}
+  .ex{font-size:15px;color:#5e5044;margin-top:14px;background:#fff;border-radius:12px;padding:10px 12px;line-height:1.7}
+  .exen{font-size:13px;color:#8a7a6c;margin-top:6px;font-weight:600}
+  .tap{font-size:12px;color:#b29a86;margin-top:14px}
+  .posbadge{position:absolute;top:12px;left:12px;background:var(--soft);color:var(--orange-d);
+    font-size:11px;font-weight:800;border-radius:999px;padding:3px 10px}
+  .grade{display:flex;gap:10px}
+  .grade button{flex:1;border:0;border-radius:14px;padding:15px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;color:#fff}
+  .g-ng{background:var(--red)} .g-ok{background:var(--green)}
+  .miss{background:var(--red-bg);color:#a3331c;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:800}
+  .wlist{font-size:14px;border-top:1px dashed #ecd9c4;padding:8px 0}
+  .wlist b{font-size:16px}
+  .small{font-size:11.5px;color:#9a8a7c;text-align:center;margin-top:16px}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;
+    padding:10px 18px;border-radius:999px;font-size:13px;font-weight:700;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+  .toast.show{opacity:.95}
+  .prow{display:flex;gap:10px;margin-top:14px}
+  .prow .btn{margin-top:0}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <section id="s-start">
+    <div class="brand"><span class="dot"></span>@Miyu_to_nihongo｜JLPT 単語フリップカード</div>
+    <div class="card">
+      <h1>JLPT 単語カード 🃏</h1>
+      <p class="muted" style="margin-top:-4px;font-size:13px">JLPT Vocabulary Flashcards</p>
+      <p>カードを めくって、ことばを おぼえよう！<br>
+        <span class="muted" style="font-size:12.5px">Flip the cards and learn words.</span></p>
+      <p>まちがえた ことばは、また 出てきます。<br>
+        <span class="muted" style="font-size:12.5px">Words you miss will come back.</span></p>
+
+      <div class="label">📚 レベルを えらぶ ／ Level</div>
+      <div class="seg" id="lvl">
+        <button data-v="N3" class="on">N3</button>
+        <button data-v="N2">N2</button>
+        <button data-v="N1">N1</button>
+      </div>
+
+      <div class="label">🔀 じゅんばん ／ Order</div>
+      <div class="seg" id="shuf">
+        <button data-v="1" class="on">シャッフル<br><span style="font-size:10px;opacity:.7">Shuffle</span></button>
+        <button data-v="0">じゅんばん<br><span style="font-size:10px;opacity:.7">In order</span></button>
+      </div>
+
+      <button class="btn" onclick="start()">スタート START（100語）</button>
+      <button class="btn ghost sm" id="resetBtn" onclick="resetStats()">記録をリセット ／ Reset</button>
+      <p class="muted center" id="histNote" style="margin-top:10px"></p>
+    </div>
+
+    <div class="card center">
+      <p>JLPT無料相談やってます。予約はLINEから🌟<br>
+        <span class="muted" style="font-size:12.5px">Free JLPT consultation — book on LINE.</span></p>
+      <a class="btn line" href="https://lin.ee/tKBQkAY" target="_blank" rel="noopener">予約はLINEから ／ Book on LINE</a>
+    </div>
+  </section>
+
+  <section id="s-play" class="hide">
+    <div class="stat">
+      <span id="st-left">残り 0 枚</span>
+      <span>ラウンド <span id="st-round">1</span>｜ミス <span id="st-miss">0</span></span>
+    </div>
+    <div class="prog"><i id="st-bar"></i></div>
+
+    <div class="scene">
+      <div class="flip" id="flip" onclick="flip()">
+        <div class="face front">
+          <div class="posbadge" id="f-pos"></div>
+          <div class="word" id="f-word"></div>
+          <div class="en hide" id="f-en"></div>
+          <div class="tap">タップして めくる 👆 ／ Tap to flip</div>
+        </div>
+        <div class="face back">
+          <div class="posbadge" id="b-pos"></div>
+          <div id="b-main"></div>
+          <div class="ex" id="b-ex"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grade" id="gradeBox" style="visibility:hidden">
+      <button class="g-ng" onclick="grade(false)">❌ わからない<br><span style="font-size:11px;opacity:.85">Not yet</span></button>
+      <button class="g-ok" onclick="grade(true)">⭕️ わかった<br><span style="font-size:11px;opacity:.85">Got it!</span></button>
+    </div>
+    <div class="prow">
+      <button class="btn ghost sm" id="prevBtn" onclick="prevCard()">← 1つ前にもどる</button>
+      <button class="btn ghost sm" onclick="quitToStart()">やめて最初に戻る</button>
+    </div>
+  </section>
+
+  <section id="s-result" class="hide">
+    <div class="card center">
+      <h2 class="center">🎉 ラウンド完了！</h2>
+      <p id="r-summary"></p>
+    </div>
+
+    <div class="card">
+      <h2>🔁 よく間違える単語 TOP</h2>
+      <div id="r-words"></div>
+      <p class="muted" id="r-nowrong" style="margin-top:6px"></p>
+    </div>
+
+    <div class="card">
+      <button class="btn" id="reviewBtn" onclick="reviewWeak()">苦手だけ もう一度（<span id="weakN">0</span>語）</button>
+      <button class="btn ghost" onclick="restartSame()">もう一度（全100語）</button>
+    </div>
+
+    <div class="card center">
+      <p>JLPT無料相談やってます。予約はLINEから🌟<br>
+        <span class="muted" style="font-size:12.5px">Free JLPT consultation — book on LINE.</span></p>
+      <a class="btn line" href="https://lin.ee/tKBQkAY" target="_blank" rel="noopener">予約はLINEから ／ Book on LINE</a>
+    </div>
+    <p class="small">© Miyu Sensei｜@Miyu_to_nihongo</p>
+  </section>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DECKS = {"N3": [{"k": "約束", "f": "やくそく", "p": "名・する", "e": "promise", "x": "友達と約束する。", "xe": "I make a promise with a friend."}, {"k": "説明", "f": "せつめい", "p": "名・する", "e": "explanation", "x": "理由を説明する。", "xe": "I explain the reason."}, {"k": "用意", "f": "ようい", "p": "名・する", "e": "preparation", "x": "夕食を用意する。", "xe": "I prepare dinner."}, {"k": "予定", "f": "よてい", "p": "名・する", "e": "plan / schedule", "x": "旅行を予定する。", "xe": "I plan a trip."}, {"k": "案内", "f": "あんない", "p": "名・する", "e": "guidance", "x": "会場へ案内する。", "xe": "I guide them to the venue."}, {"k": "連絡", "f": "れんらく", "p": "名・する", "e": "contact", "x": "あとで連絡する。", "xe": "I'll contact you later."}, {"k": "計画", "f": "けいかく", "p": "名・する", "e": "plan", "x": "旅行を計画する。", "xe": "I plan a trip."}, {"k": "注文", "f": "ちゅうもん", "p": "名・する", "e": "order", "x": "料理を注文する。", "xe": "I order food."}, {"k": "予約", "f": "よやく", "p": "名・する", "e": "reservation", "x": "席を予約する。", "xe": "I reserve a seat."}, {"k": "紹介", "f": "しょうかい", "p": "名・する", "e": "introduction", "x": "友人を紹介する。", "xe": "I introduce a friend."}, {"k": "生活", "f": "せいかつ", "p": "名・する", "e": "life / living", "x": "都会で生活する。", "xe": "I live in the city."}, {"k": "練習", "f": "れんしゅう", "p": "名・する", "e": "practice", "x": "ピアノを練習する。", "xe": "I practice the piano."}, {"k": "準備", "f": "じゅんび", "p": "名・する", "e": "preparation", "x": "試験の準備をする。", "xe": "I prepare for the exam."}, {"k": "失敗", "f": "しっぱい", "p": "名・する", "e": "failure", "x": "実験に失敗する。", "xe": "The experiment fails."}, {"k": "成功", "f": "せいこう", "p": "名・する", "e": "success", "x": "商売に成功する。", "xe": "I succeed in business."}, {"k": "卒業", "f": "そつぎょう", "p": "名・する", "e": "graduation", "x": "大学を卒業する。", "xe": "I graduate from university."}, {"k": "入学", "f": "にゅうがく", "p": "名・する", "e": "admission (school)", "x": "中学に入学する。", "xe": "I enter junior high school."}, {"k": "就職", "f": "しゅうしょく", "p": "名・する", "e": "getting a job", "x": "銀行に就職する。", "xe": "I get a job at a bank."}, {"k": "出発", "f": "しゅっぱつ", "p": "名・する", "e": "departure", "x": "朝早く出発する。", "xe": "I depart early in the morning."}, {"k": "到着", "f": "とうちゃく", "p": "名・する", "e": "arrival", "x": "無事に到着する。", "xe": "I arrive safely."}, {"k": "反省", "f": "はんせい", "p": "名・する", "e": "reflection", "x": "行動を反省する。", "xe": "I reflect on my behavior."}, {"k": "心配", "f": "しんぱい", "p": "名・する", "e": "worry", "x": "将来を心配する。", "xe": "I worry about the future."}, {"k": "安心", "f": "あんしん", "p": "名・する", "e": "relief", "x": "聞いて安心する。", "xe": "I feel relieved to hear that."}, {"k": "遅刻", "f": "ちこく", "p": "名・する", "e": "being late", "x": "学校に遅刻する。", "xe": "I'm late for school."}, {"k": "欠席", "f": "けっせき", "p": "名・する", "e": "absence", "x": "授業を欠席する。", "xe": "I'm absent from class."}, {"k": "出席", "f": "しゅっせき", "p": "名・する", "e": "attendance", "x": "式に出席する。", "xe": "I attend the ceremony."}, {"k": "文化", "f": "ぶんか", "p": "名", "e": "culture", "x": "外国の文化に触れる。", "xe": "I experience foreign culture."}, {"k": "社会", "f": "しゃかい", "p": "名", "e": "society", "x": "社会のルールを守る。", "xe": "I follow the rules of society."}, {"k": "自然", "f": "しぜん", "p": "名", "e": "nature", "x": "自然を大切にする。", "xe": "I value nature."}, {"k": "趣味", "f": "しゅみ", "p": "名", "e": "hobby", "x": "趣味は写真です。", "xe": "My hobby is photography."}, {"k": "興味", "f": "きょうみ", "p": "名", "e": "interest", "x": "歴史に興味がある。", "xe": "I'm interested in history."}, {"k": "関係", "f": "かんけい", "p": "名", "e": "relation", "x": "仕事の関係で会う。", "xe": "I meet them in connection with work."}, {"k": "理由", "f": "りゆう", "p": "名", "e": "reason", "x": "欠席の理由を言う。", "xe": "I state the reason for my absence."}, {"k": "方法", "f": "ほうほう", "p": "名", "e": "method", "x": "解決の方法を探す。", "xe": "I look for a way to solve it."}, {"k": "場合", "f": "ばあい", "p": "名", "e": "case / situation", "x": "火事の場合は逃げる。", "xe": "In case of fire, evacuate."}, {"k": "様子", "f": "ようす", "p": "名", "e": "appearance / state", "x": "外の様子を見る。", "xe": "I check the situation outside."}, {"k": "表情", "f": "ひょうじょう", "p": "名", "e": "facial expression", "x": "不安な表情をする。", "xe": "She has an anxious expression."}, {"k": "期間", "f": "きかん", "p": "名", "e": "period", "x": "長い期間休む。", "xe": "I take a long period off."}, {"k": "締め切り", "f": "しめきり", "p": "名", "e": "deadline", "x": "締め切りを守る。", "xe": "I meet the deadline."}, {"k": "給料", "f": "きゅうりょう", "p": "名", "e": "salary", "x": "給料をもらう。", "xe": "I receive my salary."}, {"k": "届く", "f": "とどく", "p": "動", "e": "to reach / arrive", "x": "荷物が届く。", "xe": "The package arrives."}, {"k": "届ける", "f": "とどける", "p": "動", "e": "to deliver", "x": "荷物を届ける。", "xe": "I deliver the package."}, {"k": "探す", "f": "さがす", "p": "動", "e": "to look for", "x": "仕事を探す。", "xe": "I look for a job."}, {"k": "見つかる", "f": "みつかる", "p": "動", "e": "to be found", "x": "答えが見つかる。", "xe": "The answer is found."}, {"k": "続く", "f": "つづく", "p": "動", "e": "to continue", "x": "いい天気が続く。", "xe": "The good weather continues."}, {"k": "決める", "f": "きめる", "p": "動", "e": "to decide", "x": "目標を決める。", "xe": "I set a goal."}, {"k": "決まる", "f": "きまる", "p": "動", "e": "to be decided", "x": "行き先が決まる。", "xe": "The destination is decided."}, {"k": "集める", "f": "あつめる", "p": "動", "e": "to collect", "x": "情報を集める。", "xe": "I gather information."}, {"k": "集まる", "f": "あつまる", "p": "動", "e": "to gather", "x": "広場に集まる。", "xe": "People gather in the square."}, {"k": "選ぶ", "f": "えらぶ", "p": "動", "e": "to choose", "x": "好きな色を選ぶ。", "xe": "I choose my favorite color."}, {"k": "育つ", "f": "そだつ", "p": "動", "e": "to grow up", "x": "植物が育つ。", "xe": "The plant grows."}, {"k": "並ぶ", "f": "ならぶ", "p": "動", "e": "to line up", "x": "レジに並ぶ。", "xe": "I line up at the register."}, {"k": "並べる", "f": "ならべる", "p": "動", "e": "to line up (tr.)", "x": "本を並べる。", "xe": "I line up the books."}, {"k": "運ぶ", "f": "はこぶ", "p": "動", "e": "to carry", "x": "机を運ぶ。", "xe": "I carry the desk."}, {"k": "片付ける", "f": "かたづける", "p": "動", "e": "to tidy up", "x": "机を片付ける。", "xe": "I tidy up the desk."}, {"k": "倒れる", "f": "たおれる", "p": "動", "e": "to fall over", "x": "自転車が倒れる。", "xe": "The bicycle falls over."}, {"k": "落とす", "f": "おとす", "p": "動", "e": "to drop", "x": "スマホを落とす。", "xe": "I drop my phone."}, {"k": "拾う", "f": "ひろう", "p": "動", "e": "to pick up", "x": "財布を拾う。", "xe": "I pick up a wallet."}, {"k": "渡す", "f": "わたす", "p": "動", "e": "to hand over", "x": "資料を渡す。", "xe": "I hand over the documents."}, {"k": "渡る", "f": "わたる", "p": "動", "e": "to cross", "x": "橋を渡る。", "xe": "I cross the bridge."}, {"k": "戻る", "f": "もどる", "p": "動", "e": "to return", "x": "席に戻る。", "xe": "I return to my seat."}, {"k": "戻す", "f": "もどす", "p": "動", "e": "to put back", "x": "元に戻す。", "xe": "I put it back."}, {"k": "足りる", "f": "たりる", "p": "動", "e": "to be enough", "x": "お金が足りる。", "xe": "I have enough money."}, {"k": "余る", "f": "あまる", "p": "動", "e": "to be left over", "x": "料理が余る。", "xe": "The food is left over."}, {"k": "困る", "f": "こまる", "p": "動", "e": "to be in trouble / at a loss", "x": "返事に困る。", "xe": "I'm troubled about how to reply."}, {"k": "助ける", "f": "たすける", "p": "動", "e": "to help / save", "x": "友達を助ける。", "xe": "I help my friend."}, {"k": "謝る", "f": "あやまる", "p": "動", "e": "to apologize", "x": "心から謝る。", "xe": "I apologize sincerely."}, {"k": "怒る", "f": "おこる", "p": "動", "e": "to get angry", "x": "本気で怒る。", "xe": "I get truly angry."}, {"k": "笑う", "f": "わらう", "p": "動", "e": "to laugh", "x": "楽しそうに笑う。", "xe": "She laughs happily."}, {"k": "泣く", "f": "なく", "p": "動", "e": "to cry", "x": "映画を見て泣く。", "xe": "I cry watching a movie."}, {"k": "苦い", "f": "にがい", "p": "い形", "e": "bitter", "x": "この薬は苦い。", "xe": "This medicine is bitter."}, {"k": "浅い", "f": "あさい", "p": "い形", "e": "shallow", "x": "川が浅い。", "xe": "The river is shallow."}, {"k": "深い", "f": "ふかい", "p": "い形", "e": "deep", "x": "深い森を歩く。", "xe": "I walk in a deep forest."}, {"k": "細かい", "f": "こまかい", "p": "い形", "e": "fine / detailed", "x": "細かい作業をする。", "xe": "I do detailed work."}, {"k": "眠い", "f": "ねむい", "p": "い形", "e": "sleepy", "x": "朝はとても眠い。", "xe": "I'm very sleepy in the morning."}, {"k": "恥ずかしい", "f": "はずかしい", "p": "い形", "e": "embarrassed", "x": "間違えて恥ずかしい。", "xe": "I'm embarrassed about my mistake."}, {"k": "珍しい", "f": "めずらしい", "p": "い形", "e": "rare / unusual", "x": "珍しい鳥を見る。", "xe": "I see a rare bird."}, {"k": "うらやましい", "f": "うらやましい", "p": "い形", "e": "envious", "x": "才能がうらやましい。", "xe": "I envy your talent."}, {"k": "立派", "f": "りっぱ", "p": "な形", "e": "splendid", "x": "立派な家に住む。", "xe": "I live in a splendid house."}, {"k": "真剣", "f": "しんけん", "p": "な形", "e": "serious", "x": "真剣な顔で話す。", "xe": "He talks with a serious face."}, {"k": "正直", "f": "しょうじき", "p": "な形", "e": "honest", "x": "正直な人が好きだ。", "xe": "I like honest people."}, {"k": "親切", "f": "しんせつ", "p": "な形", "e": "kind", "x": "親切な店員さん。", "xe": "A kind shop clerk."}, {"k": "丁寧", "f": "ていねい", "p": "な形", "e": "polite / careful", "x": "丁寧な対応をする。", "xe": "I respond politely."}, {"k": "複雑", "f": "ふくざつ", "p": "な形", "e": "complicated", "x": "複雑な気持ちだ。", "xe": "I have mixed feelings."}, {"k": "自由", "f": "じゆう", "p": "な形", "e": "free", "x": "自由な発想を持つ。", "xe": "I have free ideas."}, {"k": "必要", "f": "ひつよう", "p": "な形", "e": "necessary", "x": "必要な道具をそろえる。", "xe": "I gather the necessary tools."}, {"k": "得意", "f": "とくい", "p": "な形", "e": "good at", "x": "歌が得意だ。", "xe": "I'm good at singing."}, {"k": "盛ん", "f": "さかん", "p": "な形", "e": "thriving / popular", "x": "研究が盛んだ。", "xe": "Research is thriving."}, {"k": "急", "f": "きゅう", "p": "な形", "e": "sudden / steep", "x": "急な坂を登る。", "xe": "I climb a steep slope."}, {"k": "危険", "f": "きけん", "p": "な形", "e": "dangerous", "x": "危険な場所に近づく。", "xe": "I approach a dangerous place."}, {"k": "必ず", "f": "かならず", "p": "副", "e": "surely / without fail", "x": "必ず連絡する。", "xe": "I'll definitely contact you."}, {"k": "きっと", "f": "きっと", "p": "副", "e": "surely / certainly", "x": "きっと大丈夫だ。", "xe": "It'll surely be fine."}, {"k": "例えば", "f": "たとえば", "p": "副", "e": "for example", "x": "例えば犬や猫など。", "xe": "For example, dogs and cats."}, {"k": "特に", "f": "とくに", "p": "副", "e": "especially", "x": "特に問題ない。", "xe": "No particular problem."}, {"k": "ほとんど", "f": "ほとんど", "p": "副", "e": "almost / mostly", "x": "ほとんど終わった。", "xe": "It's almost finished."}, {"k": "だいたい", "f": "だいたい", "p": "副", "e": "roughly", "x": "だいたい分かる。", "xe": "I roughly understand."}, {"k": "急に", "f": "きゅうに", "p": "副", "e": "suddenly", "x": "車が急に止まる。", "xe": "The car stops suddenly."}, {"k": "しばらく", "f": "しばらく", "p": "副", "e": "for a while", "x": "しばらく休む。", "xe": "I rest for a while."}, {"k": "なるべく", "f": "なるべく", "p": "副", "e": "as much as possible", "x": "なるべく早く来て。", "xe": "Come as early as possible."}, {"k": "つまり", "f": "つまり", "p": "副", "e": "in other words", "x": "つまり、中止だ。", "xe": "In other words, it's canceled."}], "N2": [{"k": "影響", "f": "えいきょう", "p": "名・する", "e": "influence / effect", "x": "天気が体調に影響する。", "xe": "The weather affects my health."}, {"k": "解決", "f": "かいけつ", "p": "名・する", "e": "solution / to solve", "x": "みんなで問題を解決した。", "xe": "We solved the problem together."}, {"k": "報告", "f": "ほうこく", "p": "名・する", "e": "report", "x": "結果を上司に報告する。", "xe": "I report the results to my boss."}, {"k": "募集", "f": "ぼしゅう", "p": "名・する", "e": "recruitment", "x": "新しいメンバーを募集している。", "xe": "We're recruiting new members."}, {"k": "経験", "f": "けいけん", "p": "名・する", "e": "experience", "x": "いろいろな経験を積みたい。", "xe": "I want to gain various experiences."}, {"k": "判断", "f": "はんだん", "p": "名・する", "e": "judgment", "x": "自分で判断して行動する。", "xe": "I judge and act on my own."}, {"k": "表現", "f": "ひょうげん", "p": "名・する", "e": "expression", "x": "気持ちを言葉で表現する。", "xe": "I express my feelings in words."}, {"k": "確認", "f": "かくにん", "p": "名・する", "e": "confirmation", "x": "予約を確認してください。", "xe": "Please confirm the reservation."}, {"k": "期待", "f": "きたい", "p": "名・する", "e": "expectation", "x": "試合の結果に期待する。", "xe": "I have high hopes for the game's result."}, {"k": "努力", "f": "どりょく", "p": "名・する", "e": "effort", "x": "合格するために努力する。", "xe": "I make an effort to pass."}, {"k": "成長", "f": "せいちょう", "p": "名・する", "e": "growth", "x": "子どもの成長が早い。", "xe": "Children grow up fast."}, {"k": "達成", "f": "たっせい", "p": "名・する", "e": "achievement", "x": "ついに目標を達成した。", "xe": "I finally achieved my goal."}, {"k": "維持", "f": "いじ", "p": "名・する", "e": "maintenance", "x": "毎日運動して健康を維持する。", "xe": "I exercise daily to maintain my health."}, {"k": "解消", "f": "かいしょう", "p": "名・する", "e": "elimination", "x": "運動でストレスを解消する。", "xe": "I relieve stress through exercise."}, {"k": "制限", "f": "せいげん", "p": "名・する", "e": "restriction", "x": "この道はスピードが制限されている。", "xe": "The speed is limited on this road."}, {"k": "想像", "f": "そうぞう", "p": "名・する", "e": "imagination", "x": "明るい未来を想像する。", "xe": "I imagine a bright future."}, {"k": "反対", "f": "はんたい", "p": "名・する", "e": "opposition", "x": "その計画に反対する。", "xe": "I'm against that plan."}, {"k": "賛成", "f": "さんせい", "p": "名・する", "e": "agreement", "x": "あなたの意見に賛成です。", "xe": "I agree with your opinion."}, {"k": "我慢", "f": "がまん", "p": "名・する", "e": "patience / to endure", "x": "眠いのを我慢する。", "xe": "I put up with being sleepy."}, {"k": "苦労", "f": "くろう", "p": "名・する", "e": "hardship", "x": "苦労して家を建てた。", "xe": "I built a house through hard work."}, {"k": "緊張", "f": "きんちょう", "p": "名・する", "e": "nervousness", "x": "面接でとても緊張した。", "xe": "I was very nervous at the interview."}, {"k": "集中", "f": "しゅうちゅう", "p": "名・する", "e": "concentration", "x": "勉強に集中する。", "xe": "I concentrate on studying."}, {"k": "利用", "f": "りよう", "p": "名・する", "e": "use", "x": "図書館をよく利用する。", "xe": "I often use the library."}, {"k": "提案", "f": "ていあん", "p": "名・する", "e": "proposal", "x": "新しい方法を提案する。", "xe": "I propose a new method."}, {"k": "協力", "f": "きょうりょく", "p": "名・する", "e": "cooperation", "x": "みんなで協力して作業する。", "xe": "We work together cooperatively."}, {"k": "印象", "f": "いんしょう", "p": "名", "e": "impression", "x": "彼の第一印象はよかった。", "xe": "My first impression of him was good."}, {"k": "状況", "f": "じょうきょう", "p": "名", "e": "situation", "x": "今の状況を説明します。", "xe": "I'll explain the current situation."}, {"k": "環境", "f": "かんきょう", "p": "名", "e": "environment", "x": "働きやすい環境を作る。", "xe": "I create a comfortable work environment."}, {"k": "性格", "f": "せいかく", "p": "名", "e": "personality", "x": "明るい性格の人が好きだ。", "xe": "I like cheerful people."}, {"k": "種類", "f": "しゅるい", "p": "名", "e": "kind / type", "x": "この店は種類が多い。", "xe": "This shop has a wide variety."}, {"k": "機会", "f": "きかい", "p": "名", "e": "opportunity", "x": "いい機会だから挑戦しよう。", "xe": "It's a good chance, so let's try."}, {"k": "目的", "f": "もくてき", "p": "名", "e": "purpose", "x": "旅行の目的は休養だ。", "xe": "The purpose of the trip is rest."}, {"k": "効果", "f": "こうか", "p": "名", "e": "effect", "x": "この薬はよく効果がある。", "xe": "This medicine is very effective."}, {"k": "余裕", "f": "よゆう", "p": "名", "e": "room / leeway", "x": "時間に余裕がある。", "xe": "I have time to spare."}, {"k": "内容", "f": "ないよう", "p": "名", "e": "content", "x": "会議の内容をメモする。", "xe": "I take notes on the meeting's content."}, {"k": "価値", "f": "かち", "p": "名", "e": "value", "x": "この本は読む価値がある。", "xe": "This book is worth reading."}, {"k": "責任", "f": "せきにん", "p": "名", "e": "responsibility", "x": "責任を持って仕事をする。", "xe": "I work with responsibility."}, {"k": "文句", "f": "もんく", "p": "名", "e": "complaint", "x": "いつも文句ばかり言う。", "xe": "He's always complaining."}, {"k": "自信", "f": "じしん", "p": "名", "e": "confidence", "x": "試験に自信がある。", "xe": "I'm confident about the exam."}, {"k": "能力", "f": "のうりょく", "p": "名", "e": "ability", "x": "彼は高い能力を持っている。", "xe": "He has high ability."}, {"k": "求める", "f": "もとめる", "p": "動", "e": "to seek / demand", "x": "困ったら助けを求める。", "xe": "Ask for help when in trouble."}, {"k": "防ぐ", "f": "ふせぐ", "p": "動", "e": "to prevent", "x": "事故を防ぐために注意する。", "xe": "I'm careful to prevent accidents."}, {"k": "諦める", "f": "あきらめる", "p": "動", "e": "to give up", "x": "最後まで夢を諦めない。", "xe": "I won't give up my dream to the end."}, {"k": "慣れる", "f": "なれる", "p": "動", "e": "to get used to", "x": "新しい生活にやっと慣れた。", "xe": "I've finally gotten used to my new life."}, {"k": "含む", "f": "ふくむ", "p": "動", "e": "to include", "x": "料金は税を含む。", "xe": "The price includes tax."}, {"k": "預ける", "f": "あずける", "p": "動", "e": "to entrust / deposit", "x": "駅で荷物を預ける。", "xe": "I check my luggage at the station."}, {"k": "確かめる", "f": "たしかめる", "p": "動", "e": "to make sure", "x": "もう一度答えを確かめる。", "xe": "I check the answer once more."}, {"k": "比べる", "f": "くらべる", "p": "動", "e": "to compare", "x": "値段を比べて買う。", "xe": "I compare prices before buying."}, {"k": "増える", "f": "ふえる", "p": "動", "e": "to increase", "x": "観光客が増えた。", "xe": "The number of tourists has increased."}, {"k": "減る", "f": "へる", "p": "動", "e": "to decrease", "x": "この町の人口が減っている。", "xe": "This town's population is decreasing."}, {"k": "通じる", "f": "つうじる", "p": "動", "e": "through / connect", "x": "留学を通じて、友達を作った", "xe": "I made friends through study abroad"}, {"k": "与える", "f": "あたえる", "p": "動", "e": "to give / provide", "x": "子どもに影響を与える。", "xe": "It influences children."}, {"k": "過ごす", "f": "すごす", "p": "動", "e": "to spend (time)", "x": "楽しく休みを過ごす。", "xe": "I spend my holiday pleasantly."}, {"k": "進む", "f": "すすむ", "p": "動", "e": "to advance/ progress", "x": "計画が順調に進む。", "xe": "The plan progresses smoothly."}, {"k": "断る", "f": "ことわる", "p": "動", "e": "to refuse", "x": "残念だが誘いを断る。", "xe": "Sadly, I decline the invitation."}, {"k": "許す", "f": "ゆるす", "p": "動", "e": "to forgive / allow", "x": "小さな失敗を許す。", "xe": "I forgive small mistakes."}, {"k": "守る", "f": "まもる", "p": "動", "e": "to protect / keep", "x": "約束を必ず守る。", "xe": "I always keep my promises."}, {"k": "育てる", "f": "そだてる", "p": "動", "e": "to raise", "x": "大切に花を育てる。", "xe": "I raise flowers with care."}, {"k": "認める", "f": "みとめる", "p": "動", "e": "to admit / recognize", "x": "自分の失敗を認める。", "xe": "I admit my mistake."}, {"k": "表す", "f": "あらわす", "p": "動", "e": "to express", "x": "言葉で感謝を表す。", "xe": "I express gratitude in words."}, {"k": "経つ", "f": "たつ", "p": "動", "e": "to pass (time)", "x": "あれから3年が経った。", "xe": "Three years have passed since then."}, {"k": "訪ねる", "f": "たずねる", "p": "動", "e": "to visit", "x": "久しぶりに友人を訪ねる。", "xe": "I visit a friend after a long time."}, {"k": "助かる", "f": "たすかる", "p": "動", "e": "to be saved / helped", "x": "手伝ってくれて助かる。", "xe": "It helps that you assist me."}, {"k": "飽きる", "f": "あきる", "p": "動", "e": "to get tired of", "x": "同じ料理に飽きる。", "xe": "I get tired of the same dish."}, {"k": "済む", "f": "すむ", "p": "動", "e": "to be finished / to suffice", "x": "用事は電話で済む。", "xe": "The matter can be settled by phone."}, {"k": "黙る", "f": "だまる", "p": "動", "e": "to be silent", "x": "何も言わずに黙る。", "xe": "I stay silent without saying anything."}, {"k": "占める", "f": "しめる", "p": "動", "e": "to occupy (a share)", "x": "女性が大半を占める。", "xe": "Women make up the majority."}, {"k": "配る", "f": "くばる", "p": "動", "e": "to distribute", "x": "資料をみんなに配る。", "xe": "I hand out documents to everyone."}, {"k": "苦しむ", "f": "くるしむ", "p": "動", "e": "to suffer", "x": "長い間病気で苦しむ。", "xe": "I suffer from illness for a long time."}, {"k": "従う", "f": "したがう", "p": "動", "e": "to follow / obey", "x": "ルールに従う。", "xe": "I follow the rules."}, {"k": "等しい", "f": "ひとしい", "p": "い形", "e": "equal", "x": "二つの量は等しい。", "xe": "The two amounts are equal."}, {"k": "厳しい", "f": "きびしい", "p": "い形", "e": "strict / severe", "x": "この学校は規則が厳しい。", "xe": "This school has strict rules."}, {"k": "詳しい", "f": "くわしい", "p": "い形", "e": "detailed / familiar with", "x": "彼は歴史に詳しい。", "xe": "He is familiar with history."}, {"k": "激しい", "f": "はげしい", "p": "い形", "e": "intense / violent", "x": "雨が激しく降っている。", "xe": "It's raining hard."}, {"k": "親しい", "f": "したしい", "p": "い形", "e": "close (friend)", "x": "親しい友人に相談する。", "xe": "I consult a close friend."}, {"k": "怪しい", "f": "あやしい", "p": "い形", "e": "suspicious", "x": "夜中に怪しい音がした。", "xe": "There was a suspicious sound at night."}, {"k": "賢い", "f": "かしこい", "p": "い形", "e": "clever / wise", "x": "賢い選択をする。", "xe": "I make a wise choice."}, {"k": "鋭い", "f": "するどい", "p": "い形", "e": "sharp / keen", "x": "鋭い質問をする。", "xe": "I ask a sharp question."}, {"k": "豊か", "f": "ゆたか", "p": "な形", "e": "abundant / rich", "x": "自然が豊かな町に住む。", "xe": "I live in a town rich in nature."}, {"k": "完璧", "f": "かんぺき", "p": "な形", "e": "perfect", "x": "完璧な準備をする。", "xe": "I make perfect preparations."}, {"k": "地味", "f": "じみ", "p": "な形", "e": "plain / sober", "x": "地味な色の服を選ぶ。", "xe": "I choose plain-colored clothes."}, {"k": "派手", "f": "はで", "p": "な形", "e": "flashy / showy", "x": "派手な服装で目立つ。", "xe": "I stand out in flashy clothes."}, {"k": "苦手", "f": "にがて", "p": "な形", "e": "not good at", "x": "人前で話すのが苦手だ。", "xe": "I'm not good at speaking in public."}, {"k": "重要", "f": "じゅうよう", "p": "な形", "e": "important", "x": "これは重要な書類です。", "xe": "This is an important document."}, {"k": "適切", "f": "てきせつ", "p": "な形", "e": "appropriate", "x": "適切な方法を選ぶ。", "xe": "I choose an appropriate method."}, {"k": "確実", "f": "かくじつ", "p": "な形", "e": "certain / sure", "x": "確実な情報を集める。", "xe": "I gather reliable information."}, {"k": "順調", "f": "じゅんちょう", "p": "な形", "e": "smooth / favorable", "x": "仕事は順調に進んでいる。", "xe": "Work is going smoothly."}, {"k": "慎重", "f": "しんちょう", "p": "な形", "e": "cautious", "x": "慎重に判断する。", "xe": "I judge carefully."}, {"k": "素直", "f": "すなお", "p": "な形", "e": "honest / obedient", "x": "素直に謝る。", "xe": "I apologize honestly."}, {"k": "様々", "f": "さまざま", "p": "な形", "e": "various", "x": "様々な意見が出た。", "xe": "Various opinions came up."}, {"k": "普段", "f": "ふだん", "p": "名・副", "e": "usually", "x": "普段は7時に起きる。", "xe": "I usually get up at seven."}, {"k": "結局", "f": "けっきょく", "p": "副", "e": "after all", "x": "結局、行かなかった。", "xe": "In the end, I didn't go."}, {"k": "必ずしも", "f": "かならずしも", "p": "副", "e": "not always", "x": "高い物が必ずしもいいとは限らない。", "xe": "Expensive things aren't necessarily good."}, {"k": "たとえ", "f": "たとえ", "p": "副", "e": "even if", "x": "たとえ失敗しても続ける。", "xe": "Even if I fail, I'll continue."}, {"k": "さすが", "f": "さすが", "p": "副", "e": "as expected", "x": "さすがプロの仕事だ。", "xe": "As expected, it's professional work."}, {"k": "相変わらず", "f": "あいかわらず", "p": "副", "e": "as usual", "x": "彼は相変わらず忙しい。", "xe": "He's busy as usual."}, {"k": "思わず", "f": "おもわず", "p": "副", "e": "unintentionally", "x": "思わず笑ってしまった。", "xe": "I laughed in spite of myself."}, {"k": "一気に", "f": "いっきに", "p": "副", "e": "in one go/all at once", "x": "水を一気に飲む。", "xe": "I drink the water all at once."}, {"k": "次第に", "f": "しだいに", "p": "副", "e": "gradually", "x": "空が次第に暗くなる。", "xe": "The sky gradually gets dark."}, {"k": "あらゆる", "f": "あらゆる", "p": "連体", "e": "every / all", "x": "あらゆる方法を試す。", "xe": "I try every possible method."}], "N1": [{"k": "把握", "f": "はあく", "p": "名・する", "e": "grasp / understanding", "x": "全体を把握する。", "xe": "I grasp the whole picture."}, {"k": "工夫", "f": "くふう", "p": "名・する", "e": "have creative way", "x": "いろいろ工夫する。", "xe": "I do some creative things."}, {"k": "検討", "f": "けんとう", "p": "名・する", "e": "examination/consider", "x": "計画を検討する。", "xe": "I consider the plan."}, {"k": "配慮", "f": "はいりょ", "p": "名・する", "e": "consideration", "x": "相手に配慮する。", "xe": "I show consideration for others."}, {"k": "貢献", "f": "こうけん", "p": "名・する", "e": "contribution", "x": "社会に貢献する。", "xe": "I contribute to society."}, {"k": "普及", "f": "ふきゅう", "p": "名・する", "e": "spread / diffusion", "x": "スマホが急速に普及した。", "xe": "Smartphones spread rapidly."}, {"k": "促進", "f": "そくしん", "p": "名・する", "e": "promotion", "x": "輸出を促進する。", "xe": "I promote exports."}, {"k": "削減", "f": "さくげん", "p": "名・する", "e": "reduction", "x": "経費を削減する。", "xe": "I cut expenses."}, {"k": "解釈", "f": "かいしゃく", "p": "名・する", "e": "interpretation", "x": "文章を解釈する。", "xe": "I interpret the text."}, {"k": "妥協", "f": "だきょう", "p": "名・する", "e": "compromise", "x": "簡単に妥協しない。", "xe": "I don't compromise easily."}, {"k": "衝突", "f": "しょうとつ", "p": "名・する", "e": "collision / conflict", "x": "意見が衝突する。", "xe": "Opinions clash."}, {"k": "蓄積", "f": "ちくせき", "p": "名・する", "e": "accumulation", "x": "疲れが蓄積する。", "xe": "Fatigue accumulates."}, {"k": "抑制", "f": "よくせい", "p": "名・する", "e": "restraint / control", "x": "食欲を抑制する。", "xe": "I suppress my appetite."}, {"k": "統合", "f": "とうごう", "p": "名・する", "e": "integration", "x": "二社を統合する。", "xe": "I merge the two companies."}, {"k": "該当", "f": "がいとう", "p": "名・する", "e": "meet the requirements", "x": "条件に該当する。", "xe": "It meets the conditions."}, {"k": "添付", "f": "てんぷ", "p": "名・する", "e": "attachment", "x": "資料を添付する。", "xe": "I attach the documents."}, {"k": "模索", "f": "もさく", "p": "名・する", "e": "groping / searching", "x": "解決策を模索する。", "xe": "I grope for a solution."}, {"k": "葛藤", "f": "かっとう", "p": "名・する", "e": "(inner) conflict", "x": "心の中で葛藤する。", "xe": "I struggle inwardly."}, {"k": "是正", "f": "ぜせい", "p": "名・する", "e": "correction", "x": "不平等を是正する。", "xe": "I correct the inequality."}, {"k": "発揮", "f": "はっき", "p": "名・する", "e": "demonstration your ability", "x": "実力を発揮する。", "xe": "I show my true ability."}, {"k": "創造", "f": "そうぞう", "p": "名・する", "e": "creation", "x": "新しい文化を創造する。", "xe": "I create a new culture."}, {"k": "確立", "f": "かくりつ", "p": "名・する", "e": "establishment", "x": "信頼を確立する。", "xe": "I establish trust."}, {"k": "想定", "f": "そうてい", "p": "名・する", "e": "assumption", "x": "最悪の事態を想定する。", "xe": "I assume the worst case."}, {"k": "自覚", "f": "じかく", "p": "名・する", "e": "self-awareness", "x": "責任を自覚する。", "xe": "I'm aware of my responsibility."}, {"k": "誇張", "f": "こちょう", "p": "名・する", "e": "exaggeration", "x": "話を誇張する。", "xe": "I exaggerate the story."}, {"k": "干渉", "f": "かんしょう", "p": "名・する", "e": "interference", "x": "他人に干渉する。", "xe": "I interfere with others."}, {"k": "緩和", "f": "かんわ", "p": "名・する", "e": "easing / relaxation", "x": "規制を緩和する。", "xe": "I ease the regulations."}, {"k": "循環", "f": "じゅんかん", "p": "名・する", "e": "circulation", "x": "血液が体を循環する。", "xe": "Blood circulates through the body."}, {"k": "矛盾", "f": "むじゅん", "p": "名", "e": "contradiction", "x": "説明に矛盾がある。", "xe": "There's a contradiction in the explanation."}, {"k": "傾向", "f": "けいこう", "p": "名", "e": "tendency", "x": "物価が上がる傾向にある。", "xe": "Prices tend to rise."}, {"k": "要素", "f": "ようそ", "p": "名", "e": "element", "x": "成功の重要な要素。", "xe": "An important element of success."}, {"k": "根拠", "f": "こんきょ", "p": "名", "e": "grounds / basis", "x": "その説に根拠はない。", "xe": "That theory has no basis."}, {"k": "効率", "f": "こうりつ", "p": "名", "e": "efficiency", "x": "効率よく働く。", "xe": "I work efficiently."}, {"k": "意図", "f": "いと", "p": "名", "e": "intention", "x": "発言の意図がわからない。", "xe": "I don't understand the intent of the remark."}, {"k": "概念", "f": "がいねん", "p": "名", "e": "concept", "x": "新しい概念を学ぶ。", "xe": "I learn a new concept."}, {"k": "観点", "f": "かんてん", "p": "名", "e": "viewpoint", "x": "別の観点から考える。", "xe": "I think from another viewpoint."}, {"k": "前提", "f": "ぜんてい", "p": "名", "e": "premise", "x": "それを前提に話を進める。", "xe": "I proceed on that premise."}, {"k": "摩擦", "f": "まさつ", "p": "名", "e": "friction", "x": "国家間の摩擦が高まる。", "xe": "Friction between nations rises."}, {"k": "範囲", "f": "はんい", "p": "名", "e": "range / scope", "x": "試験の範囲を確認する。", "xe": "I check the exam's scope."}, {"k": "概要", "f": "がいよう", "p": "名", "e": "outline / summary", "x": "計画の概要を説明する。", "xe": "I explain the outline of the plan."}, {"k": "真相", "f": "しんそう", "p": "名", "e": "the truth (of a matter)", "x": "事件の真相を知る。", "xe": "I learn the truth of the case."}, {"k": "名残", "f": "なごり", "p": "名", "e": "trace / remnants", "x": "夏の名残が感じられる。", "xe": "You can feel the remnants of summer."}, {"k": "軌道", "f": "きどう", "p": "名", "e": "track / orbit", "x": "事業が軌道に乗る。", "xe": "The business gets on track."}, {"k": "醍醐味", "f": "だいごみ", "p": "名", "e": "real pleasure / thrill", "x": "登山の醍醐味を味わう。", "xe": "I savor the real joy of mountain climbing."}, {"k": "兆候", "f": "ちょうこう", "p": "名", "e": "sign / indication", "x": "景気回復の兆候が見える。", "xe": "Signs of economic recovery appear."}, {"k": "補う", "f": "おぎなう", "p": "動", "e": "to supplement / make up for", "x": "不足を補う。", "xe": "I make up for the shortage."}, {"k": "試みる", "f": "こころみる", "p": "動", "e": "to attempt", "x": "新しい方法を試みる。", "xe": "I attempt a new method."}, {"k": "損なう", "f": "そこなう", "p": "動", "e": "to harm / spoil", "x": "健康を損なう。", "xe": "I damage my health."}, {"k": "顧みる", "f": "かえりみる", "p": "動", "e": "to look back / reflect on", "x": "自分の行いを顧みる。", "xe": "I reflect on my own conduct."}, {"k": "担う", "f": "になう", "p": "動", "e": "to bear / shoulder", "x": "次の時代を担う。", "xe": "I carry the next era."}, {"k": "携わる", "f": "たずさわる", "p": "動", "e": "to be engaged in", "x": "開発に携わる。", "xe": "I'm involved in development."}, {"k": "賄う", "f": "まかなう", "p": "動", "e": "to cover (costs)", "x": "旅費を賄う。", "xe": "I cover the travel costs."}, {"k": "強いる", "f": "しいる", "p": "動", "e": "to force / compel", "x": "我慢を強いる。", "xe": "I force them to endure."}, {"k": "妨げる", "f": "さまたげる", "p": "動", "e": "to interfere", "x": "睡眠を妨げる。", "xe": "It interferes with sleep."}, {"k": "促す", "f": "うながす", "p": "動", "e": "to urge / prompt", "x": "注意を促す。", "xe": "I call for attention."}, {"k": "滞る", "f": "とどこおる", "p": "動", "e": "to be delayed / stagnate", "x": "仕事が滞る。", "xe": "The work stalls."}, {"k": "怠る", "f": "おこたる", "p": "動", "e": "to neglect", "x": "確認を怠る。", "xe": "I neglect to check."}, {"k": "委ねる", "f": "ゆだねる", "p": "動", "e": "to entrust", "x": "判断を委ねる。", "xe": "I entrust the decision to someone."}, {"k": "募る", "f": "つのる", "p": "動", "e": "to grow intense", "x": "不安が募る。", "xe": "Anxiety grows."}, {"k": "控える", "f": "ひかえる", "p": "動", "e": "to refrain / hold back", "x": "甘い物を控える。", "xe": "I cut back on sweets."}, {"k": "隔てる", "f": "へだてる", "p": "動", "e": "to separate", "x": "海を隔てた国。", "xe": "A country separated by the sea."}, {"k": "偏る", "f": "かたよる", "p": "動", "e": "to be biased / uneven", "x": "意見が偏る。", "xe": "Opinions become biased."}, {"k": "漂う", "f": "ただよう", "p": "動", "e": "to drift / waft", "x": "いい香りが漂う。", "xe": "A nice scent drifts in the air."}, {"k": "営む", "f": "いとなむ", "p": "動", "e": "to run / conduct", "x": "レストランを営む。", "xe": "I run a restaurant."}, {"k": "唱える", "f": "となえる", "p": "動", "e": "advocate", "x": "異議を唱える。", "xe": "I raise an objection."}, {"k": "揺らぐ", "f": "ゆらぐ", "p": "動", "e": "to waver", "x": "決意が揺らぐ。", "xe": "My resolve wavers."}, {"k": "培う", "f": "つちかう", "p": "動", "e": "to cultivate / foster", "x": "実力を培う。", "xe": "I cultivate my abilities."}, {"k": "称える", "f": "たたえる", "p": "動", "e": "to praise", "x": "勇気を称える。", "xe": "I praise the courage."}, {"k": "群がる", "f": "むらがる", "p": "動", "e": "to swarm / crowd", "x": "花に蝶が群がる。", "xe": "Butterflies swarm around the flowers."}, {"k": "償う", "f": "つぐなう", "p": "動", "e": "to compensate / atone", "x": "罪を償う。", "xe": "I atone for the crime."}, {"k": "著しい", "f": "いちじるしい", "p": "い形", "e": "remarkable / striking", "x": "著しく成長する。", "xe": "It grows remarkably."}, {"k": "乏しい", "f": "とぼしい", "p": "い形", "e": "scarce / lacking", "x": "資源に乏しい。", "xe": "It is poor in resources."}, {"k": "甚だしい", "f": "はなはだしい", "p": "い形", "e": "extreme", "x": "甚だしい勘違いだ。", "xe": "It's a gross misunderstanding."}, {"k": "紛らわしい", "f": "まぎらわしい", "p": "い形", "e": "confusing / misleading", "x": "紛らわしい表現を避ける。", "xe": "I avoid confusing expressions."}, {"k": "心強い", "f": "こころづよい", "p": "い形", "e": "reassuring", "x": "仲間がいて心強い。", "xe": "Having companions is reassuring."}, {"k": "望ましい", "f": "のぞましい", "p": "い形", "e": "desirable", "x": "望ましい結果が出る。", "xe": "A desirable result comes out."}, {"k": "慌ただしい", "f": "あわただしい", "p": "い形", "e": "hectic / busy", "x": "慌ただしい毎日を送る。", "xe": "I lead a hectic daily life."}, {"k": "名高い", "f": "なだかい", "p": "い形", "e": "famous / renowned", "x": "名高い名所を訪ねる。", "xe": "I visit a famous site."}, {"k": "円滑", "f": "えんかつ", "p": "な形", "e": "smooth", "x": "会議を円滑に進める。", "xe": "I run the meeting smoothly."}, {"k": "顕著", "f": "けんちょ", "p": "な形", "e": "remarkable / marked", "x": "効果が顕著に表れる。", "xe": "The effect appears markedly."}, {"k": "妥当", "f": "だとう", "p": "な形", "e": "reasonable / valid", "x": "妥当な金額だ。", "xe": "It's a reasonable amount."}, {"k": "厳密", "f": "げんみつ", "p": "な形", "e": "strict / precise", "x": "厳密に調べる。", "xe": "I investigate strictly."}, {"k": "巧み", "f": "たくみ", "p": "な形", "e": "skillful", "x": "巧みに話す。", "xe": "I speak skillfully."}, {"k": "露骨", "f": "ろこつ", "p": "な形", "e": "blatant / open", "x": "露骨に嫌がる。", "xe": "He shows open dislike."}, {"k": "軽率", "f": "けいそつ", "p": "な形", "e": "careless / rash", "x": "軽率な発言を反省する。", "xe": "I regret my careless remark."}, {"k": "強引", "f": "ごういん", "p": "な形", "e": "forceful / pushy", "x": "強引に進める。", "xe": "I push it through forcefully."}, {"k": "莫大", "f": "ばくだい", "p": "な形", "e": "enormous", "x": "莫大な利益を得る。", "xe": "I make an enormous profit."}, {"k": "鮮やか", "f": "あざやか", "p": "な形", "e": "vivid / brilliant", "x": "鮮やかな手並みだ。", "xe": "It's a brilliant performance."}, {"k": "曖昧", "f": "あいまい", "p": "な形", "e": "vague / ambiguous", "x": "曖昧な態度をとる。", "xe": "He takes an ambiguous attitude."}, {"k": "厄介", "f": "やっかい", "p": "な形", "e": "troublesome", "x": "厄介な仕事を任される。", "xe": "I'm assigned a troublesome task."}, {"k": "あえて", "f": "あえて", "p": "副", "e": "daringly / deliberately", "x": "あえて厳しく言う。", "xe": "I deliberately speak harshly."}, {"k": "もはや", "f": "もはや", "p": "副", "e": "no longer / already", "x": "もはや限界だ。", "xe": "I'm already at my limit."}, {"k": "ことごとく", "f": "ことごとく", "p": "副", "e": "entirely / all", "x": "予想がことごとく外れる。", "xe": "All my predictions miss."}, {"k": "一概に", "f": "いちがいに", "p": "副", "e": "(not) necessarily", "x": "一概には言えない。", "xe": "You can't say so across the board."}, {"k": "かろうじて", "f": "かろうじて", "p": "副", "e": "barely", "x": "かろうじて合格する。", "xe": "I barely pass."}, {"k": "ひたすら", "f": "ひたすら", "p": "副", "e": "keep -ing/ persistently", "x": "ひたすら待つ。", "xe": "I just keep waiting."}, {"k": "むやみに", "f": "むやみに", "p": "副", "e": "recklessly / excessively", "x": "むやみに怒らない。", "xe": "I don't get angry recklessly."}, {"k": "とっさに", "f": "とっさに", "p": "副", "e": "instantly / on the spur", "x": "とっさに身をかわす。", "xe": "I dodge instantly."}, {"k": "案の定", "f": "あんのじょう", "p": "副", "e": "as expected / sure enough", "x": "案の定、失敗した。", "xe": "Sure enough, it failed."}, {"k": "強いて", "f": "しいて", "p": "副", "e": "forcibly / if pressed", "x": "強いて言えば青が好きだ。", "xe": "If pressed, I prefer blue."}]};
+let CARDS=[]; let STORE_KEY="";
+
+function loadStore(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {w:{},sessions:0}; }catch(e){ return {w:{},sessions:0}; } }
+function saveStore(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(store)); }catch(e){} }
+let store = {w:{},sessions:0};
+function wstat(i){ if(!store.w[i]) store.w[i]={seen:0,miss:0}; return store.w[i]; }
+
+let cfg = {level:"N3", shuffle:true};
+function bindSeg(id, set){
+  const box=document.getElementById(id);
+  box.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    box.querySelectorAll("button").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on"); set(b.dataset.v);
+  });
+}
+function setLevel(lv){
+  cfg.level=lv; STORE_KEY="kizuk_"+lv.toLowerCase()+"_flash_v2"; CARDS=DECKS[lv];
+  store=loadStore(); showHist();
+}
+function showHist(){
+  const seen=Object.values(store.w).reduce((a,x)=>a+(x.seen>0?1:0),0);
+  document.getElementById("histNote").textContent =
+    seen ? ("これまで "+seen+" 語に挑戦・"+store.sessions+" 回プレイ済み") : "はじめての挑戦です🌱";
+}
+
+let queue=[], curIdx=-1, flipped=false, round=1, roundMiss=0, roundCorrect=0, deckSize=0, history=[];
+function deckAll(){ return CARDS.map((c,i)=>i); }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function go(id){ ["start","play","result"].forEach(s=>document.getElementById("s-"+s).classList.add("hide"));
+  document.getElementById("s-"+id).classList.remove("hide"); window.scrollTo({top:0}); }
+
+function start(){ setLevel(cfg.level); let d=deckAll(); if(cfg.shuffle) shuffle(d); beginRound(d, true); }
+function beginRound(deck, fresh){
+  if(fresh){ round=1; store.sessions++; saveStore(); }
+  queue=[...deck]; deckSize=deck.length; roundMiss=0; roundCorrect=0; history=[];
+  go("play"); nextCard();
+}
+function nextCard(){
+  if(queue.length===0){ return endRound(); }
+  curIdx=queue[0]; flipped=false;
+  document.getElementById("flip").classList.remove("flipped");
+  document.getElementById("gradeBox").style.visibility="hidden";
+  renderCard(); updateStat();
+}
+function renderCard(){
+  const c=CARDS[curIdx]; const ms=wstat(curIdx);
+  const missTag = ms.miss>0 ? (' <span class="miss">過去ミス×'+ms.miss+'</span>') : "";
+  document.getElementById("f-pos").innerHTML=c.p+missTag;
+  document.getElementById("f-word").className="word"+(c.k.length>=5?" small":"");
+  document.getElementById("f-word").textContent=c.k;
+  document.getElementById("b-pos").textContent=c.p;
+  document.getElementById("b-main").innerHTML='<div class="reading">'+c.f+'</div><div class="en">'+c.e+'</div>';
+  document.getElementById("b-ex").innerHTML='例：'+c.x+'<div class="exen">'+(c.xe||"")+'</div>';
+}
+function flip(){
+  flipped=!flipped;
+  document.getElementById("flip").classList.toggle("flipped",flipped);
+  document.getElementById("gradeBox").style.visibility = flipped ? "visible" : "hidden";
+}
+function grade(ok){
+  if(!flipped) return;
+  history.push({queue:[...queue], roundMiss, roundCorrect, idx:curIdx, stat: store.w[curIdx]? {...store.w[curIdx]} : null});
+  const ms=wstat(curIdx); ms.seen++;
+  if(ok){ roundCorrect++; queue.shift(); }
+  else { ms.miss++; roundMiss++; const c=queue.shift(); queue.push(c); toast("覚えるまで もう一度！"); }
+  saveStore(); nextCard();
+}
+function prevCard(){
+  if(!history.length){ toast("これより前はありません"); return; }
+  const s=history.pop();
+  queue=s.queue; roundMiss=s.roundMiss; roundCorrect=s.roundCorrect;
+  if(s.stat===null) delete store.w[s.idx]; else store.w[s.idx]=s.stat;
+  saveStore();
+  curIdx=queue[0]; flipped=false;
+  document.getElementById("flip").classList.remove("flipped");
+  document.getElementById("gradeBox").style.visibility="hidden";
+  renderCard(); updateStat();
+}
+function updateStat(){
+  const left=new Set(queue).size;
+  document.getElementById("st-left").textContent=cfg.level+" ・ 残り "+left+" 枚";
+  document.getElementById("st-round").textContent=round;
+  document.getElementById("st-miss").textContent=roundMiss;
+  const done=deckSize-left;
+  document.getElementById("st-bar").style.width=(deckSize? done/deckSize*100:0)+"%";
+  const pb=document.getElementById("prevBtn"); if(pb) pb.disabled=history.length===0;
+}
+function endRound(){ renderResult(); go("result"); }
+
+let weakDeck=[];
+function renderResult(){
+  const total=roundCorrect+roundMiss;
+  const acc = total? Math.round(roundCorrect/total*100) : 100;
+  document.getElementById("r-summary").innerHTML=
+    "このラウンド <b>"+deckSize+"語</b> を完走！<br>正解 "+roundCorrect+"回・もう一度 "+roundMiss+"回（正答率 約"+acc+"%）";
+  const missed=Object.keys(store.w).map(i=>({i:+i,...store.w[i]})).filter(x=>x.miss>0).sort((a,b)=>b.miss-a.miss).slice(0,10);
+  const wbox=document.getElementById("r-words");
+  if(missed.length===0){ wbox.innerHTML=""; document.getElementById("r-nowrong").textContent="間違いなし！完璧です✨"; }
+  else{
+    document.getElementById("r-nowrong").textContent="";
+    wbox.innerHTML=missed.map(m=>{const c=CARDS[m.i];
+      return '<div class="wlist"><b>'+c.k+'</b>（'+c.f+'）<span class="muted"> '+c.e+'</span> <span class="miss">×'+m.miss+'</span></div>';
+    }).join("");
+  }
+  weakDeck = Object.keys(store.w).map(i=>+i).filter(i=>store.w[i].miss>0);
+  document.getElementById("weakN").textContent=weakDeck.length;
+  document.getElementById("reviewBtn").style.display = weakDeck.length? "block":"none";
+}
+function reviewWeak(){ if(!weakDeck.length) return; let d=[...weakDeck]; if(cfg.shuffle) shuffle(d); round++; beginRound(d,false); }
+function restartSame(){ let d=deckAll(); if(cfg.shuffle) shuffle(d); beginRound(d,true); }
+function quitToStart(){ showHist(); go("start"); }
+function resetStats(){
+  if(!confirm("学習記録（ミス回数）をすべて消します。よろしいですか？")) return;
+  store={w:{},sessions:0}; saveStore(); showHist(); toast("記録をリセットしました");
+}
+let tT;
+function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.classList.add("show");
+  clearTimeout(tT); tT=setTimeout(()=>t.classList.remove("show"),1100); }
+document.addEventListener("keydown",e=>{
+  if(document.getElementById("s-play").classList.contains("hide")) return;
+  if(e.code==="Space"){ e.preventDefault(); flip(); }
+  else if(flipped && (e.key==="1")) grade(false);
+  else if(flipped && (e.key==="2")) grade(true);
+});
+bindSeg("shuf", v=>cfg.shuffle=(v==="1"));
+bindSeg("lvl", v=>setLevel(v));
+setLevel("N3");
+</script>
+</body>
+</html>
