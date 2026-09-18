@@ -1,0 +1,553 @@
+<title>解答表示チェックリスト</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+  :root{
+    --ground:#F6F5F1;
+    --surface:#FFFFFF;
+    --surface-2:#EFEEE8;
+    --ink:#16181D;
+    --ink-2:#5C6270;
+    --ink-3:#8B909C;
+    --rule:#E0DFD8;
+    --rule-2:#CFCEC5;
+    --ai:#2C4A7C;
+    --ai-soft:#E7ECF5;
+    --moss:#3D7A57;
+    --moss-soft:#E3F0E8;
+    --shadow:0 1px 2px rgba(22,24,29,.05);
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#14161A;
+      --surface:#1C1F25;
+      --surface-2:#23262D;
+      --ink:#ECEDF0;
+      --ink-2:#A0A6B3;
+      --ink-3:#757B88;
+      --rule:#2B2F37;
+      --rule-2:#3A3F49;
+      --ai:#8FAEDF;
+      --ai-soft:#22293A;
+      --moss:#7BC195;
+      --moss-soft:#1D2A22;
+      --shadow:0 1px 2px rgba(0,0,0,.3);
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#14161A;
+    --surface:#1C1F25;
+    --surface-2:#23262D;
+    --ink:#ECEDF0;
+    --ink-2:#A0A6B3;
+    --ink-3:#757B88;
+    --rule:#2B2F37;
+    --rule-2:#3A3F49;
+    --ai:#8FAEDF;
+    --ai-soft:#22293A;
+    --moss:#7BC195;
+    --moss-soft:#1D2A22;
+    --shadow:0 1px 2px rgba(0,0,0,.3);
+    color-scheme:dark;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+    font-size:15px;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+
+  /* ---- sticky header ---- */
+  .bar{
+    position:sticky;
+    top:env(safe-area-inset-top,0px);
+    z-index:20;
+    background:color-mix(in srgb,var(--ground) 92%,transparent);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--rule);
+  }
+  .bar-in{
+    max-width:760px;margin:0 auto;
+    padding-block:10px;padding-left:16px;padding-right:16px;
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  }
+  .bar h1{
+    margin:0;font-size:15px;font-weight:700;letter-spacing:.01em;
+    flex:1 1 auto;min-width:0;
+  }
+  .tally{font-size:13px;color:var(--ink-2);white-space:nowrap}
+  .tally b{color:var(--ink);font-weight:700}
+  .meter{height:3px;background:var(--rule);position:relative;overflow:hidden}
+  .meter i{display:block;height:100%;width:0;background:var(--moss);transition:width .25s ease}
+
+  /* ---- page ---- */
+  main{max-width:760px;margin:0 auto;padding-block:24px 64px;padding-left:16px;padding-right:16px}
+
+  .lede{margin:0 0 20px;font-size:14px;color:var(--ink-2);max-width:60ch}
+  .lede strong{color:var(--ink);font-weight:700}
+
+  /* ---- what to set ---- */
+  .recipe{
+    background:var(--surface);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--ai);
+    border-radius:3px;
+    padding-block:16px;padding-left:16px;padding-right:16px;
+    margin-bottom:12px;
+    box-shadow:var(--shadow);
+  }
+  .recipe h2{
+    margin:0 0 2px;font-size:11px;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--ai);
+  }
+  .recipe p.where{margin:0 0 14px;font-size:13px;color:var(--ink-2)}
+  .steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  .steps li{display:flex;align-items:baseline;gap:10px;font-size:14px}
+  .steps .k{flex:1 1 auto;min-width:0}
+  .steps .v{
+    flex:0 0 auto;font-size:12px;font-weight:700;
+    padding:1px 9px;border-radius:999px;
+    background:var(--ai-soft);color:var(--ai);
+  }
+  .steps .sub{display:block;font-size:12px;color:var(--ink-3);line-height:1.5}
+
+  .caution{
+    font-size:12.5px;color:var(--ink-2);line-height:1.65;
+    margin:0 0 28px;padding-left:14px;border-left:2px solid var(--rule-2);
+  }
+
+  /* ---- controls ---- */
+  .controls{
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+    margin-bottom:18px;
+  }
+  .btn{
+    font:inherit;font-size:13px;font-weight:500;
+    padding:6px 13px;border-radius:999px;cursor:pointer;
+    border:1px solid var(--rule-2);background:var(--surface);color:var(--ink-2);
+  }
+  .btn[aria-pressed="true"]{background:var(--ai);border-color:var(--ai);color:#fff}
+  .btn:hover{border-color:var(--ai)}
+  .btn:focus-visible{outline:2px solid var(--ai);outline-offset:2px}
+  .sync{font-size:12px;color:var(--ink-3);margin-left:auto}
+
+  /* ---- sections ---- */
+  .level{margin-bottom:34px}
+  .level>h2{
+    margin:0 0 4px;font-size:22px;font-weight:700;letter-spacing:.02em;
+    display:flex;align-items:baseline;gap:10px;
+  }
+  .level>h2 .n{font-size:13px;font-weight:500;color:var(--ink-3)}
+
+  .group{margin-top:16px}
+  .group>h3{
+    margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:.12em;
+    color:var(--ink-3);display:flex;align-items:baseline;gap:8px;
+  }
+  .group>h3 .c{font-size:11px;font-weight:500;color:var(--ink-3)}
+
+  ul.rows{list-style:none;margin:0;padding:0;
+    background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+    overflow:hidden;box-shadow:var(--shadow);
+  }
+  ul.rows li+li{border-top:1px solid var(--rule)}
+  .row{display:flex;align-items:stretch;min-height:52px}
+  .row.hide{display:none}
+
+  .tick{
+    flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    width:50px;border:0;background:transparent;cursor:pointer;padding:0;
+    border-right:1px solid var(--rule);
+  }
+  .tick:focus-visible{outline:2px solid var(--ai);outline-offset:-2px}
+  .tick .box{
+    width:21px;height:21px;border-radius:4px;
+    border:1.5px solid var(--rule-2);background:var(--surface);
+    display:flex;align-items:center;justify-content:center;
+    transition:background .12s ease,border-color .12s ease;
+  }
+  .tick .box svg{width:13px;height:13px;opacity:0;transition:opacity .12s ease}
+  .row.done .tick .box{background:var(--moss);border-color:var(--moss)}
+  .row.done .tick .box svg{opacity:1}
+
+  .open{
+    flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:10px;
+    padding-block:9px;padding-left:12px;padding-right:12px;
+    color:inherit;text-decoration:none;
+  }
+  .open:hover{background:var(--surface-2)}
+  .open:focus-visible{outline:2px solid var(--ai);outline-offset:-2px}
+  .wk{
+    flex:0 0 auto;font-size:11px;color:var(--ink-3);
+    min-width:46px;
+  }
+  .nm{flex:1 1 auto;min-width:0;font-size:14px;line-height:1.45;overflow-wrap:anywhere}
+  .row.done .nm{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--rule-2)}
+  .old{
+    flex:0 0 auto;font-size:10px;font-weight:700;letter-spacing:.06em;
+    color:var(--ink-3);border:1px solid var(--rule-2);border-radius:3px;
+    padding:0 5px;line-height:1.5;
+  }
+  .arw{flex:0 0 auto;color:var(--ink-3);font-size:15px;line-height:1}
+  .open:hover .arw{color:var(--ai)}
+
+  .empty{padding:18px 16px;font-size:13px;color:var(--ink-3);text-align:center}
+
+  footer{
+    max-width:760px;margin:0 auto;
+    padding-block:0 8px;padding-left:16px;padding-right:16px;
+    font-size:12px;color:var(--ink-3);line-height:1.7;
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="bar">
+  <div class="bar-in">
+    <h1>N1–N3 解答表示チェックリスト</h1>
+    <div class="tally"><b id="tDone">0</b> / <span id="tAll">0</span> 件 完了</div>
+  </div>
+  <div class="meter"><i id="meter"></i></div>
+</div>
+
+<main>
+  <p class="lede">生徒が回答を送信したあとに<strong>点数と正解が見られる</strong>ようにする設定です。Google フォームのこの設定は API から一括変更できないため、各テストを開いて手動で切り替えます。下のリンクは各テストの<strong>「設定」タブを直接開きます</strong>。</p>
+
+  <section class="recipe">
+    <h2>各テストで設定する内容</h2>
+    <p class="where">フォームを開く → 上部の「設定」タブ</p>
+    <ul class="steps">
+      <li><span class="k">成績の発表<span class="sub">「確認後に手動で表示する」ではなく</span></span><span class="v">送信直後</span></li>
+      <li><span class="k">不正解だった質問<span class="sub">回答者の設定</span></span><span class="v">オン</span></li>
+      <li><span class="k">正解<span class="sub">回答者の設定</span></span><span class="v">オン</span></li>
+      <li><span class="k">点数<span class="sub">回答者の設定</span></span><span class="v">オン</span></li>
+    </ul>
+  </section>
+
+  <p class="caution">「テストにする」がオフのフォームは「設定」タブ内の<strong>テスト</strong>をオンにしてから、上の4項目を設定してください。<br>同じ画面の下にある「全テストのデフォルト設定」は<strong>今後作る新しいフォームにだけ</strong>適用され、既存のテストは変わりません。</p>
+
+  <div class="controls">
+    <button class="btn" id="fToggle" type="button" aria-pressed="false">未設定のみ表示</button>
+    <button class="btn" id="reset" type="button">チェックをすべて消す</button>
+    <span class="sync" id="sync">読み込み中…</span>
+  </div>
+
+  <div id="list"></div>
+</main>
+
+<footer>
+  リンク先は Google フォームの編集画面です。Google アカウントにログインした状態で開いてください。<br>
+  一覧は Drive の N1 / N2 / N3 各フォルダと「単語・漢字テスト リンク集」から作成しています。
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var DATA = [
+    { level:"N1", folder:"1jtJhBNvYA2b6mqsY0yonusPeo4fyya-1", groups:[
+      { name:"単語", items:[
+        ["week1","N1 week1","1IuosLBkUG_I2sXDxg3kZ4-46Ldxc5-GkG7QsT62QR3Q"],
+        ["week2","N1 week2","1OVpGhrmx9pkDzcKC03oUT5ROsxxn_5XEvNiePKa2unM"],
+        ["week3","N1 week3","1_b86yKsC-vDL6OE7qc63tfZzYppSfr9Kq6P4PywbOYk"],
+        ["week4","N1 week4","1J9KNYzVHL-z3SyXpvcQqn7uRwUAJoUmVZOSCwMUeqmE"],
+        ["week5","N1 week5","1iYK4BXXCQebVn0jPwwzuLdv2f8E1Ow7_beUqhp58AFw"],
+        ["week6","N1 week6","18h1e7sS3f3rcrrau-SeGUTwKg8bIQsse_tFb1pIVycg"],
+        ["week7","N1 week7","1t-q0JstwgnN_l3moLr7G0-aGZ-UuK6nYKcvnpuQCOxc"],
+        ["week8","N1 単語テスト Week8（天気・災害・自然）","1-Dd3LYrCt7zC_D_i4huB4yA3ntwSzj9pMZ4jjGr9ySA"],
+        ["week9","N1 単語テスト Week9（事故・事件・社会）","1MsKJvXwCymQJzzH5x2wcBkyMloAXuG1D6H6xRVPJV64"],
+        ["week10","N1 単語テスト Week10（性格・気持ち）","1NRgUZJ8ejxmT7WOzOnRAc6ueSEdLRD0_Wm3R2D_4j4Q"],
+        ["week11","N1 単語テスト Week11（副詞・同音異義語・慣用句）","1prrASSLFCOed9xqEvNR_Og4oeytH4dsqdfLDbhrEdiw"],
+        ["その他","N1 単語テスト その他（暮らし・住まい・家事）","1dXya3Dnl6Bpw8q76cuXiP5BRzXtGKTuQF2EkGgdFMD4"]
+      ]},
+      { name:"漢字", items:[
+        ["Week1","N1 漢字テスト（人・亻偏 30字）","1tKjVLZNQtHFomoJcxuDjzUyq88TQL9E_Ra7wQ8F0H6U"],
+        ["Week2","N1 漢字テスト Week2（刀刂・力・囗・土偏 24字）","12kODkTuZHTsLrd0fTrfxTS_Kvr68zDTcqVsekJSVT94"],
+        ["Week3","N1 漢字テスト Week3（女偏〜广 27字）","1rrfaVKUBjmVNZZH07pj8pwZnONVwVseO-b9aS7xO71E"],
+        ["Week4","N1 漢字テスト Week4（弓偏〜心・忄偏 27字）","1kDOCTiNPORAxx_B5zvoNrRn4iQoDgAVBFau79P4BX4c"],
+        ["Week5","N1 漢字テスト Week5（手・扌偏〜水・氵偏 27字）","1jz0yxA8FKWjJ35DNwY5-jEHSO1kBLPEWt51k1RGrb1Y"],
+        ["Week6","N1 漢字テスト Week6（水・氵偏〜歹 24字）","1bF58h5MGDix1nNK2vbI4jXIhAZBJZ22IJOQZ1AzBz20"],
+        ["Week7","N1 漢字テスト Week7（水偏変形〜糸偏 27字）","1PfdHFlcsa_fVhR1oISGvNDPdLsvBOM51eWhz9Uw5yQ8"],
+        ["Week8","N1 漢字テスト Week8（糸偏〜貝偏 27字）","1pw4Y6nATI0YTqQqSLZHtvCJhOSmK7Y1Au0u1SvUQhS8"],
+        ["Week9","N1 漢字テスト Week9（辶〜阜・阝偏 30字）","1bJO_CON1W8Qeng0gAjJGILH8716Z3LGQ4oQBU4kQ314"],
+        ["Week10","N1 漢字テスト Week10（雨偏〜その他 27字）","1T_ndWEsJBS7bkx0EBqVErGXeUNSIQZcrNMs0bNhkt8E"],
+        ["Week11","N1 漢字テスト Week11（その他 27字）","1R17-by1iZSVVlJ1AMf90swd3asWNFp6qEYdQ9eIwMBw"],
+        ["Week12","N1 漢字テスト Week12（その他 27字）","1qjP1As-KQWYfbnoUHhpsZc84SvlUJnnvlTkVRYp5vq8"],
+        ["Week13","N1 漢字テスト Week13（その他 26字）","1fccaBH2uf57F4oZ0wVDmBNBfCMQ9j5-efPERJC1eEOY"],
+        ["Week14","N1 漢字テスト Week14（その他 27字）","150x0nMl0yhqxWeXkn1CZ5JOO_5baalaZRi9rmrOKoQg"],
+        ["Week15","N1 漢字テスト Week15（その他 26字）","138j6WDifxEPfwuXftvr67pLIb3HeEfihjfrgTe5oUkk"],
+        ["Week16","N1 漢字テスト Week16（その他 27字）","1SpUO2yETPBVMunjrK05pQijHiJGXJjJUWCDrbv-LLI8"],
+        ["—","N1 漢字1","1U8IA45Fj0j1rb6bkG5DJB0Ty0cJBBr5Tm5Yxur6jNEY",1],
+        ["—","N1 漢字 ②","1NuaN8bMt52Juhb4jk-lshX3Y1VzYDNHGNXSIAuS6Y3k",1]
+      ]},
+      { name:"その他", items:[
+        ["—","【接辞テスト】N1 — 接頭語・接尾辞 穴埋め","1Gir08VnJc_vcazIpkfR4V7sbVv1czMWGzYNviZm09vM"]
+      ]}
+    ]},
+
+    { level:"N2", folder:"19c-gZlmiad3D0ejyPLBW46EKWOpbP3yX", groups:[
+      { name:"単語", items:[
+        ["week1","N2 Week1","1WuIreVl9BAtIT6azTPm12DbqFLOu_S1qpZMa70zXJtg"],
+        ["week2","N2 単語week2","1dTxQw_t22eTHYpV5EkxYvuCJL75H_hB217Toswv6z0s"],
+        ["week3","N2 week3","19IDMuXZepPMvWL5rFhcQ3WGvKfyYNhSrv2wX0mJSLos"],
+        ["week4","N2 単語week4","1SQG-DF72m7ppyYkl7QV3KbbVFqCYYR2QRS2IzLg4YgI"],
+        ["week5","N2 week5","1tFHjriD_q8-stZ4SWjYNI_BVqXOEU_8mR0Wmd-kbpf8"],
+        ["week6","N2 week6","1PqEM_zrf-GWqfiwjHdjcqr28vgm1DiMh_i-eht85JzE"],
+        ["week7","N2 week7","1EoIhNPbSbEBpPhDlHVtZ8yFETOc5FDReFymGiR-U87Q"],
+        ["week8","N2 week8（2期）","1iFqPKrri7EBoPGcL_-xT6YtTpSyJXbHWEyIha8l38Yk"],
+        ["week9","N2 week9k（2期）","17BuyAUZUorwH-7QTiv3qKOzSUa07KZzhGY7u6i7qu3g"],
+        ["副詞","N2 単語テスト 副詞・接続詞","1iquMBr5vIOamJlScW9Y1t2AAV1kjMhc0u5eu62D9qUA"],
+        ["その他","N2 単語テスト その他（暮らし・大学・仕事）","1WlJYcPN53Xb2WcKew-fYPKGgEoPatSyYpALf-moLfb4"],
+        ["week8","N2 week8（1期）","1CYJfs2cfSbEBOXAFu5p_42vJY33wnv2EhYZ2OSvosV0",1],
+        ["week9","N2 week9（1期）","1BQbhdErITpFHypgEgEWOPuAbxaE89GwZdaTw0F0duys",1],
+        ["week10","N2 week10","1UAzDvgQnpUIxIeVsMBs1sPviWJca7WmrU_kd5JWSPQ8",1],
+        ["week11","N2 week11","1_PYTPdNIfG-PFuQzl53cw2xHRtOINAcNC41_bQFHs30",1],
+        ["—","N2 単語 人間関係","1z6i6k8nzzmvpGNoW81JIH0B4q121FW6HDUNq1H5aarE",1]
+      ]},
+      { name:"漢字", items:[
+        ["Week1","N2 漢字テスト Week1（人・亻偏 18字）","1paHKVMHlFbqbSyjL2yKMSvENM9zqdQ1V2twb7Neq4t4"],
+        ["Week2","N2 漢字テスト Week2（刀・刂〜囗 21字）新","1z0hoIiPxrvxZgBhpq3Vf0xtXR0hFpfDvDvFE822UdAg"],
+        ["Week2","N2 漢字テスト Week2（刀・刂偏〜囗・囲み 21字）旧","1omncagbCe9Ho4e7RMhprElnQH5vAwSbLbBxZt3DaqZk"],
+        ["Week3","N2 漢字テスト Week3（土偏〜寺偏 21字）","1Z0dEvP33s3fINU8Jv5Y17r8DJgqiNTa3n87XKOPGs5Q"],
+        ["Week4","N2 漢字テスト Week4（尊偏〜木偏 22字）","1UHMtWyohKzXcIJRN47QyFIY0495TLqPag9rGv4u6Z5U"],
+        ["Week5","N2 漢字テスト Week5（木偏〜水・氵偏 22字）","1HIMQrJ5ToNWYDHHkF3syQNXKgqRxEaJO_v7HsXfqEw0"],
+        ["Week6","N2 漢字テスト Week6（水・氵偏 19字）","1TtYvGkzXb53y2TRkgiKxiCw8s6KKGwcsAOV1wG6V5f0"],
+        ["Week7","N2 漢字テスト Week7（火・灼偏〜雨偏 23字）","1TLVyzfJFPxNW0wRXXKUc_Nl07NBemdfsGqd7Hftl_Uw"],
+        ["Week8","N2 漢字テスト Week8（頁〜糸偏 22字）","166uu64thwyDUTW3bcEwMdiHEAN-p8bi295dKDNZKy90"],
+        ["Week9","N2 漢字テスト Week9（糸偏〜貝偏 22字）","1XXVNxlBga2lWi4YiRy8iYJinUqKvIlqePGopc-bOxb4"],
+        ["Week10","N2 漢字テスト Week10（辶〜肉・月偏 19字）","1RJeV-NFRb9wevMEIXGryq9_ukuwyS1Gm5PPEphTSTS4"],
+        ["Week11","N2 漢字テスト Week11（草・艹偏〜その他 22字）","1GhD2fkKLXLNNnNFnEgeMeQ2mmmOfX7EBNtomkcX69AY"],
+        ["Week12","N2 漢字テスト Week12（その他 22字）","1TGBKW7oQjeujIZM01UWXfm2M27jMjIj-dcTeQ_oFjiM"],
+        ["Week13","N2 漢字テスト Week13（その他 22字）","1jc_pzfoje7h-6gEzTXEayBez83UqGEr898kAHWCH7iw"],
+        ["Week14","N2 漢字テスト Week14（その他 23字）","15lzmMqsVk_btdxL-M9DJRLbkSOD25d-Mp4qCMyitCUY"],
+        ["Week15","N2 漢字テスト Week15（その他 22字）","1F2OyTRyK1z8ZWb9VlhVOdCB80YCdh0gXSL8q98KqkXI"],
+        ["Week16","N2 漢字テスト Week16（その他 23字）","11GXwG6mgBnLfDN4M01nPOQVlcw3CkeWrzKVHpNAnujk"],
+        ["—","N2 漢字 ①","1EIoDmiUECX7_6lZX3YHDTi4HMpnE4bpWuYEViT4HctM",1],
+        ["—","N2 漢字②","1wLdenOgIEXHyZEuWeaar2x-E1Mr_oCaPKRIzr2qYOJI",1],
+        ["—","N2 漢字③","1oZn2dXiccXDzUNptyx19o--6-nbCq9Ci6k6QugQm1hc",1],
+        ["—","N2 漢字④","1Rj-6_9CivveBx9qZd0hzNRkX4Tm07hQ1ENeTa3Xotks",1],
+        ["—","N2 漢字⑤","1-CsrY4O8rixMhTCIY-gBbsYVkf0AYmNNufDqYcYpBw0",1],
+        ["—","N2 N3 漢字①","1gTju-EelTL5shk3o3V0h1BGGirEt-Lx0vKpoo784DoA",1]
+      ]},
+      { name:"その他", items:[
+        ["—","【接辞テスト】N2 — 接頭語・接尾辞 穴埋め","109COh8eJDvv2EPJzAuAWoANCTmVbG8Z3TGhjac7aNV4"],
+        ["—","慣用句テスト（N2）","12SUsaa3NfoqmI2PoyscylbO9C8Iy25Z1Chzz8CvJpa4"]
+      ]}
+    ]},
+
+    { level:"N3", folder:"1KAt8JkYrbj373wCOaBEatL9NiLw7Ln4V", groups:[
+      { name:"単語", items:[
+        ["week1","N3 week1","1T2inxeLeONX9JJpRcfDR0kkqSXim34SzeLS-lsGGEX0"],
+        ["week2","N3 week2","1BFk0DiI62GxtapfSjb1VKaVEdcqyMjsFPXiNwVGdaN8"],
+        ["week3","N3 week3","1liqDb1ISuQrz8HxT_XeKYxyOIvOPssmlGG3VM2hY6Z8"],
+        ["week4","N3 week4","14nGVp_DJs5EF5gdlpw1pYngurzicqdnmUSC6uGcEPxc"],
+        ["week4","N3 week（タイトル未入力）","1Df_NK5SdPynIVkyWgPHv0eRQ_KOGB2m16payDiQbflM"],
+        ["week5","N3 week5","1GadvgW9nzbOAewbxX4VnCjNGS7Vo0i_5g7pIIdPCRog"],
+        ["week6","N3 week6","1yNBHVDPEhssWoalHAbhKofi3BPIaH6mtaLuKP9XtYWE"],
+        ["week7","N3 week7（2期）","1kbJkCYDdbAbkVn1uwzXE5psi4vfu-nnu8Qkw4dSGdAo"],
+        ["week7","N3 week7 1期生","1w4EVbhNSnZTdBl9l8JDMEK1Z0yj5DCO4qGYphlI3l5g"],
+        ["week8","N3 week8（2期）","1gsKAUFsWcRjDtvxcbYDNONqfqI7-v8foMmWjE4U_Rds"],
+        ["week8","N3 week8 1期生","1r-PVFG6OGdCvEQHHsIL0Sa8bkTzSw4ylUkZ0Iz0JwwM"],
+        ["week9","N3 week9","1gaSFi0_u5WUpR_0ti4lQGRciLzqbFJZ1MYPQSuPkj80"],
+        ["week10","N3 week10","1R4u4uN7CUSPsRlh7cn88kKxm-o-N_r_ioehxo8j4Jhg"],
+        ["week11","N3 week11","1cSi2w6YghH6BifDze5bP0kb5vOvVHEUrbawjZm--U-8"],
+        ["まとめ","JLPT N3 語彙テスト（30問）","1-M95101m88ZGK_OUER5e27da76wbZGKX_R0sKS7QbfY"]
+      ]},
+      { name:"漢字", items:[
+        ["Week1","N3 漢字テスト Week1（人・亻偏 21字）","1p_n2S7mT86wUsFLysrOuUUogpoUMhAj9zMgJC3iHp64"],
+        ["Week2","N3 漢字テスト week2（刀・刂偏〜口偏 22字）","10Cv7CabVPW4lkx9I4gWXU4eUpG3BUDwR_sKSWC2DYEY"],
+        ["Week3","N3 漢字テスト Week3（囗・土・女・宀 23字）","15gNRdRp7gIto38UZTWz-AzKxPo3wvYq6dEOl6NVjy58"],
+        ["Week4","N3 漢字テスト Week4（心・忄〜手・扌 20字）","1W0mW0-wyM7yDRtiuDjJTKVeooneLrkZfdY-Mi9OL-xQ"],
+        ["Week5","N3 漢字テスト Week5（手・扌〜日偏 19字）","1eu8bVp1InhYpM9rfse906hFwoAe7g-6J_NuIlmIe_wY"],
+        ["Week6","N3 漢字テスト Week6（木偏〜火・灬偏 21字）","1Y2FQHo5JDzZDFJ2Dw8lwPxRkaSSv9SSJFb8ObwUias4"],
+        ["Week7","N3 漢字テスト Week7（目偏〜言・訁偏 19字）","1M0MK3JHmpawDMa3XjCAOpatU7Elo-7rxUxODS5ZanBQ"],
+        ["Week8","N3 漢字テスト Week8（貝偏〜辶 22字）","1KBZ26zEz2UYUsOW9bKs3SgmOSAC9IKnBSxf71KoKkW4"],
+        ["Week9","N3 漢字テスト Week9（阜・阝偏〜その他 20字）","1iK0FlxVm25ni3FivswI_Hs2ajy_0_5EEPlb0UVZClXg"],
+        ["Week10","N3 漢字テスト Week10（その他 20字）","1060e1mniZOfy0y-w2qM4ngpa_r3nPNS3ZDI9ZuMdCcw"],
+        ["Week11","N3 漢字テスト Week11（その他 20字）","1QoX0CHj7uvk0-5rCinpnQmta00Ys_0Zmg4hXthxg0MU"],
+        ["Week12","N3 漢字テスト Week12（その他 20字）","1CZYYKDJ81Ee9kt3UM5dhN2bXYVivmqlsZNrS4lG7ORw"],
+        ["Week13","N3 漢字テスト Week13（その他 20字）","1UkSnpVhAF95pCHwQpXfSMwJldrOjNatNQOEb6vyUYGs"],
+        ["Week14","N3 漢字テスト Week14（その他 20字）","1U0rz2wHbNykF68hD_vWJZPMDMAV_SSEnem8Y0zEwVvU"],
+        ["Week15","N3 漢字テスト Week15（その他 20字）","1L17heB6wxD9IsUQ9zqfI4f4W-6-fehJELIdtHkRyG5w"],
+        ["Week16","N3 漢字テスト Week16（その他 20字）","1QbzYUz10u4RqiuLnbJTpnl7akCTSAIvGo9o8ePKgsuQ"],
+        ["—","N3 漢字 ①","1s59o-JOu99UJqwVeFS5--BM2Cdxzi_4heFqE-9bBlq0",1],
+        ["—","N3 漢字②","1lR0hrnIpkyybhrXemnPOAhKqqFknL9MXgKZyDjq1pqM",1],
+        ["—","N3 漢字③","1bLZT5jBMj5UfL97h9akH9qoGBVCA4LtWeD5nVwsx1zc",1]
+      ]}
+    ]}
+  ];
+
+  var ALL = [];
+  DATA.forEach(function(lv){ lv.groups.forEach(function(g){ g.items.forEach(function(it){ ALL.push(it[2]); }); }); });
+
+  var done = Object.create(null);
+  var onlyTodo = false;
+  var LS = "jlpt-quiz-answer-settings";
+  var dbDoc = null;
+  var writing = false, pending = false;
+
+  var listEl = document.getElementById("list");
+  var tDone = document.getElementById("tDone");
+  var tAll = document.getElementById("tAll");
+  var meter = document.getElementById("meter");
+  var syncEl = document.getElementById("sync");
+  var fToggle = document.getElementById("fToggle");
+  var resetBtn = document.getElementById("reset");
+
+  tAll.textContent = String(ALL.length);
+
+  var CHECK = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  function esc(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  function build(){
+    var html = "";
+    DATA.forEach(function(lv){
+      html += '<section class="level" data-level="'+esc(lv.level)+'">';
+      html += '<h2>'+esc(lv.level)+' <span class="n mono" data-lvcount="'+esc(lv.level)+'"></span></h2>';
+      lv.groups.forEach(function(g, gi){
+        var gid = lv.level+"-"+gi;
+        html += '<div class="group">';
+        html += '<h3>'+esc(g.name)+' <span class="c mono" data-gcount="'+esc(gid)+'"></span></h3>';
+        html += '<ul class="rows">';
+        g.items.forEach(function(it){
+          var wk = it[0], nm = it[1], id = it[2], old = it[3];
+          html += '<li class="row" data-id="'+esc(id)+'" data-g="'+esc(gid)+'" data-lv="'+esc(lv.level)+'">'
+            + '<button class="tick" type="button" aria-pressed="false" aria-label="'+esc(nm)+' を完了にする"><span class="box">'+CHECK+'</span></button>'
+            + '<a class="open" href="https://docs.google.com/forms/d/'+esc(id)+'/edit#settings" target="_blank" rel="noopener">'
+            + '<span class="wk mono">'+esc(wk)+'</span>'
+            + '<span class="nm">'+esc(nm)+'</span>'
+            + (old ? '<span class="old">旧</span>' : '')
+            + '<span class="arw" aria-hidden="true">&rsaquo;</span>'
+            + '</a></li>';
+        });
+        html += '</ul></div>';
+      });
+      html += '</section>';
+    });
+    listEl.innerHTML = html;
+
+    listEl.addEventListener("click", function(e){
+      var btn = e.target.closest ? e.target.closest(".tick") : null;
+      if(!btn) return;
+      var li = btn.closest(".row");
+      toggle(li.getAttribute("data-id"));
+    });
+  }
+
+  function toggle(id){
+    if(done[id]) delete done[id]; else done[id] = true;
+    paint();
+    save();
+  }
+
+  function paint(){
+    var n = 0;
+    var perG = Object.create(null), perGT = Object.create(null);
+    var perL = Object.create(null), perLT = Object.create(null);
+
+    var rows = listEl.querySelectorAll(".row");
+    for(var i=0;i<rows.length;i++){
+      var li = rows[i];
+      var id = li.getAttribute("data-id");
+      var g = li.getAttribute("data-g"), lv = li.getAttribute("data-lv");
+      perGT[g] = (perGT[g]||0)+1; perLT[lv] = (perLT[lv]||0)+1;
+      var on = !!done[id];
+      if(on){ n++; perG[g]=(perG[g]||0)+1; perL[lv]=(perL[lv]||0)+1; }
+      li.classList.toggle("done", on);
+      li.querySelector(".tick").setAttribute("aria-pressed", on ? "true" : "false");
+      li.classList.toggle("hide", onlyTodo && on);
+    }
+
+    tDone.textContent = String(n);
+    meter.style.width = (ALL.length ? (n/ALL.length*100) : 0) + "%";
+
+    var gc = listEl.querySelectorAll("[data-gcount]");
+    for(var j=0;j<gc.length;j++){
+      var k = gc[j].getAttribute("data-gcount");
+      gc[j].textContent = (perG[k]||0) + "/" + (perGT[k]||0);
+    }
+    var lc = listEl.querySelectorAll("[data-lvcount]");
+    for(var m=0;m<lc.length;m++){
+      var k2 = lc[m].getAttribute("data-lvcount");
+      lc[m].textContent = (perL[k2]||0) + " / " + (perLT[k2]||0) + " 件";
+    }
+  }
+
+  /* ---- persistence: db when available, localStorage otherwise ---- */
+  function readLocal(){
+    try{
+      var raw = localStorage.getItem(LS);
+      if(raw){ var o = JSON.parse(raw); if(o && typeof o === "object") done = o; }
+    }catch(e){}
+  }
+  function writeLocal(){
+    try{ localStorage.setItem(LS, JSON.stringify(done)); }catch(e){}
+  }
+
+  function save(){
+    writeLocal();
+    if(!dbDoc) return;
+    if(writing){ pending = true; return; }
+    writing = true;
+    var body = {done: Object.assign({}, done)};
+    dbDoc.set(body).then(function(){
+      writing = false;
+      syncEl.textContent = "保存しました";
+      if(pending){ pending = false; save(); }
+    }).catch(function(err){
+      writing = false; pending = false;
+      syncEl.textContent = (err && err.code === "revoked") ? "この端末にのみ保存" : "この端末にのみ保存";
+    });
+  }
+
+  readLocal();
+  build();
+  paint();
+  syncEl.textContent = "この端末に保存";
+
+  fToggle.addEventListener("click", function(){
+    onlyTodo = !onlyTodo;
+    fToggle.setAttribute("aria-pressed", onlyTodo ? "true" : "false");
+    fToggle.textContent = onlyTodo ? "すべて表示" : "未設定のみ表示";
+    paint();
+  });
+
+  resetBtn.addEventListener("click", function(){
+    if(!window.confirm("チェックをすべて消します。よろしいですか？")) return;
+    done = Object.create(null);
+    paint();
+    save();
+  });
+
+  if(window.claude && typeof window.claude.use === "function"){
+    window.claude.use("db").then(function(db){
+      if(!db) return;
+      dbDoc = db.doc("progress/answer-settings");
+      dbDoc.onSnapshot(function(snap){
+        if(writing || pending) return;
+        var d = snap.exists ? snap.data() : null;
+        var incoming = (d && d.done && typeof d.done === "object") ? d.done : null;
+        if(incoming){
+          done = Object.assign(Object.create(null), incoming);
+          writeLocal();
+          paint();
+        }
+        syncEl.textContent = "全端末で同期";
+      }, function(){
+        syncEl.textContent = "この端末にのみ保存";
+      });
+    }).catch(function(){});
+  }
+})();
+</script>
